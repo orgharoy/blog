@@ -10,7 +10,7 @@ const PrimaryLayouts = () => {
       <div className="h-16 shadow-md">
         <TopBar />
       </div>
-      <div className="flex-grow">
+      <div className="flex-grow pt-5">
         <Outlet />
       </div>
       <div className="h-12 bg-green-500">

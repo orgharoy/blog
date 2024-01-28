@@ -5,6 +5,7 @@ import PrimaryLayout from './layouts/PrimaryLayouts.jsx'
 import './App.css'
 
 import Home from './pages/Home.jsx';
+import CreateBlog from './pages/CreateBlog.jsx';
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route element={<PrimaryLayout />}>
           <Route path="/" element = {<Home />} />
+          <Route path="/create-blog" element = {<CreateBlog />} />
         </Route>
       </Routes>
     </BrowserRouter>
