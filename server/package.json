@@ -1,0 +1,19 @@
+{
+  "name": "blog_server",
+  "version": "1.0.0",
+  "description": "Blog Backend Server",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "test"
+  },
+  "author": "Orgha Tomal Roy",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.1.1"
+  }
+}
