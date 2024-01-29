@@ -7,6 +7,7 @@ const apiRoutes = {
   getBlogById: `${API_URL}/blog/`,
 
   createComment: `${API_URL}/comment/`,
+  getComments: `${API_URL}/comment/`,
 
 
   

@@ -1,34 +1,82 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import apiRoutes from '../api/apiRoutes.js';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Skeleton, Empty, message } from 'antd';
 import Comment from '../componenets/Comment';
 import NotificationContext from '../context/notificationContext.jsx';
 
 const Blog = () => {
   const { openNotification } = useContext(NotificationContext);
+  const [buttonLoad, setButtonLoad] = useState(false);
   let { id } = useParams();
+  const [form] = Form.useForm();
   const [blog, setBlog] = useState({});
+  const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(true);
+
+  const [editingComment, setEditingComment] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(apiRoutes.getBlogById + id);
+      setBlog(response.data);
+    } catch (error) {
+      console.error('Error fetching blogs:', error);
+      openNotification('error', 'Unsuccessful', error.message);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(apiRoutes.getComments + id);
+      console.log(response.data)
+      setComments(response.data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      openNotification('error', 'Unsuccessful', error.message);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        console.log(apiRoutes.getBlogById + id);
-        const response = await axios.get(apiRoutes.getBlogById + id);
-        setBlog(response.data);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-        openNotification('error', 'Unsuccessful', error.message);
-      }
-    };
-
     fetchData();
-  }, [openNotification]);
+    fetchComments();
+  }, []);
 
-  const onFinish = (values) => {
-    console.log('Submitted values:', values);
-    // Add your submission logic here
+  const onFinish = async (values) => {
+    setButtonLoad(true);
+    values.blogId = id;
+
+    try {
+      const response = await axios.post(apiRoutes.createComment, values);
+      setButtonLoad(false);
+      setComments((prevComments) => [values, ...prevComments]);
+      form.resetFields();
+    } catch (error) {
+      console.log('Error:', error);
+      setButtonLoad(false);
+      openNotification('error', 'Unsuccessful', error.message);
+    }
+  };
+
+  const onReset = () => {
+    form.resetFields();
+    
+    setEditMode(false);
+  };
+
+  const handleEditComment = (comment) => {
+    setEditingComment(comment);
+    setEditMode(true);
+    form.setFieldsValue({
+      name: comment.name,
+      email: comment.email,
+      body: comment.body,
+    });
+
   };
 
   return (
@@ -45,12 +93,12 @@ const Blog = () => {
         </div>
         <div className="col-span-6 md:col-span-2">
           <div className="border rounded-md p-2">
-            <Form onFinish={onFinish}>
+            <Form onFinish={onFinish} form={form}>
               <div className="flex gap-2">
-                <Form.Item name="textarea" rules={[{ required: true, message: 'Enter Your Name' }]}>
+                <Form.Item name="name" rules={[{ required: true, message: 'Enter Your Name' }]}>
                   <Input placeholder="Name"/>
                 </Form.Item>
-                <Form.Item name="textarea" rules={[{ required: true, message: 'Enter Your Email' }]}>
+                <Form.Item name="email" rules={[{ required: true, message: 'Enter Your Email' }]}>
                   <Input placeholder="Email"/>
                 </Form.Item>
               </div>
@@ -58,21 +106,23 @@ const Blog = () => {
                 <Input.TextArea placeholder="Do you have anything to say?" />
               </Form.Item>
               <Form.Item className="flex justify-end">
-                <Button type="primary" htmlType="submit">
-                  Comment
+                <Button type="primary" onClick={onReset} className="mr-3">
+                  Clear
+                </Button>
+                <Button type="primary" htmlType="submit" loading={buttonLoad}>
+                  {editMode ? 'Update' : 'Comment'}
                 </Button>
               </Form.Item>
             </Form>
 
-            <div>
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
+            <div >
+              {loadingComments ? (
+                <Skeleton active />
+              ) : comments.length === 0 ? (
+                <Empty description="No Comments Yet" />
+              ) : (
+                comments.map((comment) => <Comment key={comment.id} comment = {comment} onEditComment={handleEditComment}/>)
+              )}
             </div>
           </div>
         </div>

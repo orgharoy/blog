@@ -19,18 +19,19 @@ export const createComment = async (req, res) => {
 };
 
 export const getCommentByBlogId = async (req, res) => {
-    try {
-        const blogId = req.params.blogId;
+  try {
+    const blogId = req.params.blogId;
 
-        const comments = await Comment.findAll({
-          where: { blogId }
-        });
-    
-        res.json(comments);
-      } catch (error) {
-        console.error('Error fetching comments by blogId:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
+    const comments = await Comment.findAll({
+      where: { blogId },
+      order: [['createdAt', 'DESC']] // Order by createdAt in descending order
+    });
+
+    res.json(comments);
+  } catch (error) {
+    console.error('Error fetching comments by blogId:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };
 
 export const updateCommentById = async (req, res) => {

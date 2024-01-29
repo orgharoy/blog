@@ -30,6 +30,7 @@ const CreateBlog = () => {
       openNotification('error', 'Unsuccessful', error.message)
     }
   };
+  
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
