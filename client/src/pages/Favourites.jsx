@@ -31,7 +31,9 @@ const Favourites = () => {
 
   return (
     <div className="container mx-auto">
+      <h1 className="font-semibold text-2xl">My Favourites</h1>
       <div className="py-8 flex flex-wrap justify-center gap-5">
+        
         {loading ? (
           Array.from({ length: 10 }).map((_, index) => (
             <Card key={index} style={{ width: 250, marginTop: 300 }} loading={true}>
