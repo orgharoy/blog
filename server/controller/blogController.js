@@ -2,89 +2,79 @@ import Blog from "../models/blogs.js";
 
 export const createBlog = async (req, res) => {
   try {
-    console.log(req.body);
-
     const { userId, title, body } = req.body;
+    console.log(req.body);
+    // Create a new blog post
+    const newBlog = await Blog.create({ userId, title, body });
 
-    // Creating a new blog instance
-    const newBlog = new Blog({ userId, title, body });
-
-    // Saveing the blog record to the database
-    const savedBlog = await newBlog.save();
-
-    res.status(201).json(savedBlog);
-
+    res.status(201).json({
+      message: 'Blog Successfully Posted',
+      blog: newBlog,
+    });
   } catch (error) {
-    console.error('Error creating blog:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('Error creating blog post:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 export const getBlogs = async (req, res) => {
   try {
-
-    const allBlogs = await Blog.find();
-    res.status(200).json(allBlogs);
-
+    const blogs = await Blog.findAll();
+    res.json(blogs);
   } catch (error) {
-
-    console.error('Error fetching all blogs:', error);
-    res.status(500).send('Internal Server Error');
-
+    console.error('Error fetching blogs:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 export const getBlogsById = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const blog = await Blog.findById(id);
+    const blogId = req.params.id;
+    const blog = await Blog.findByPk(blogId);
 
     if (!blog) {
-      return res.status(404).json({ message: 'Blog not found' });
+      return res.status(404).json({ error: 'Blog not found' });
     }
-
-    res.status(200).json(blog);
+    res.json(blog);
   } catch (error) {
     console.error('Error fetching blog by ID:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 export const updateBlogById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { title, body } = req.body;
+    const blogId = req.params.id;
+    const { userId, title, body } = req.body;
 
-    // Find the blog by ID and update its title and body
-    const updatedBlog = await Blog.findByIdAndUpdate(id, { title, body }, { new: true });
+    const blog = await Blog.findByPk(blogId);
 
-    if (!updatedBlog) {
-      // If the blog with the specified ID is not found
-      return res.status(404).json({ message: 'Blog not found' });
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' });
     }
-
-    res.status(200).json(updatedBlog);
+    await blog.update({ userId, title, body });
+    res.json(blog);
   } catch (error) {
     console.error('Error updating blog by ID:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 export const deleteBlogById = async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const deletedBlog = await Blog.findByIdAndDelete(id);
+    const blogId = req.params.id;
+    const blog = await Blog.findByPk(blogId);
 
-    if (!deletedBlog) {
-      return res.status(404).json({ message: 'Blog not found' });
+    if (!blog) {
+      return res.status(404).json({ error: 'Blog not found' });
     }
 
-    res.status(200).json({ message: 'Blog deleted successfully' });
+    await blog.destroy();
+
+    res.json({ message: 'Blog deleted successfully' });
   } catch (error) {
     console.error('Error deleting blog by ID:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 

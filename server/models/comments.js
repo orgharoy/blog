@@ -1,19 +1,22 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/sequelize.js';
-import Comment from './comments.js';
 
-const Blog = sequelize.define('Blog', {
+const Comment = sequelize.define('Comment', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  userId: {
+  blogId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  title: {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -23,7 +26,4 @@ const Blog = sequelize.define('Blog', {
   },
 });
 
-Blog.hasMany(Comment, { foreignKey: 'blogId' });
-Comment.belongsTo(Blog, { foreignKey: 'blogId' });
-
-export default Blog;
+export default Comment;
