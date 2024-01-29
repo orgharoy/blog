@@ -18,7 +18,7 @@ export const createComment = async (req, res) => {
     }
 };
 
-export const getCommentByBlogId = async (req, res) => {
+export const getBlogsComments = async (req, res) => {
   try {
     const blogId = req.params.blogId;
 
@@ -36,18 +36,18 @@ export const getCommentByBlogId = async (req, res) => {
 
 export const updateCommentById = async (req, res) => {
     try {
-      const blogId = req.params.id;
-      const { userId, title, body } = req.body;
+      const commentID = req.params.id;
+      const { name, email, body } = req.body;
   
-      const blog = await Blog.findByPk(blogId);
+      const comment = await Comment.findByPk(commentID);
   
-      if (!blog) {
-        return res.status(404).json({ error: 'Blog not found' });
+      if (!comment) {
+        return res.status(404).json({ error: 'Comment not found' });
       }
-      await blog.update({ userId, title, body });
-      res.json(blog);
+      await comment.update({ name, email, body, });
+      res.json(comment);
     } catch (error) {
-      console.error('Error updating blog by ID:', error);
+      console.error('Error updating comment by ID:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };

@@ -3,8 +3,9 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { databaseInit } from './database/index.js';
 
-import { createBlog, getBlogs, getBlogsById, updateBlogById, deleteBlogById } from './controller/blogController.js';
-import { createComment, getCommentByBlogId, deleteCommentByID } from './controller/commentController.js';
+import { createBlog, getBlogs, getBlogsById, updateBlogById, deleteBlogById, getFavoriteBlogsByUserId } from './controller/blogController.js';
+import { createComment, getBlogsComments, updateCommentById, deleteCommentByID } from './controller/commentController.js';
+import { createFavourite, deleteFavorite } from './controller/favouriteController.js'
 
 const app = express();
 const port = 3000;
@@ -18,14 +19,19 @@ app.use(bodyParser.urlencoded({ extended: true,}),);
 
 app.post('/api/blog', createBlog)
 app.get('/api/blogs', getBlogs)
+app.get('/api/blogs/favourite/:userId', getFavoriteBlogsByUserId)
 app.get('/api/blog/:id', getBlogsById)
 app.put('/api/blog/:id', updateBlogById);
 app.delete('/api/blog/:id', deleteBlogById);
 
 app.post('/api/comment', createComment);
-app.get('/api/comment/:blogId', getCommentByBlogId);
-app.put('/api/comment/:id', createComment);
+app.get('/api/comment/:blogId', getBlogsComments);
+app.put('/api/comment/:id', updateCommentById);
 app.delete('/api/comment/:id', deleteCommentByID);
+
+app.post('/api/favorite', createFavourite);
+app.delete('/api/favorite/:userId/:blogId', deleteFavorite);
+
 
 app.listen(port, () => {
   console.log(`🚀 App Started On Port: ${port}`);

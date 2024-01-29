@@ -1,10 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { Button, Form, Input } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import apiRoutes from '../api/apiRoutes.js';
 import NotificationContext from '../context/notificationContext.jsx';
 
 const CreateBlog = () => {
+  const navigate = useNavigate();
   const { TextArea } = Input;
   const [buttonLoad, setButtonLoad] = useState(false);
   const { openNotification } = useContext(NotificationContext);
@@ -21,8 +23,7 @@ const CreateBlog = () => {
       openNotification('success', 'Successfully Created', response.data.message) 
       
       form.resetFields();
-
-      //navigate(`/business-initiative/${response.data.model.id}`);
+      navigate(`/blog/${response.data.blog.id}`);
 
     } catch (error) {
       console.log('heeror here : ' + error)

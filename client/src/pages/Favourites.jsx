@@ -7,7 +7,7 @@ import NotificationContext from '../context/notificationContext.jsx';
 import BlogCard from '../componenets/BlogCard';
 const { Meta } = Card;
 
-const Home = () => {
+const Favourites = () => {
   const { openNotification } = useContext(NotificationContext);
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
@@ -15,7 +15,8 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiRoutes.getBlogs);
+        console.log(apiRoutes.getFavouriteBlog + '1');
+        const response = await axios.get(apiRoutes.getFavouriteBlog + 1);
         setBlogs(response.data);
         setLoading(false);
       } catch (error) {
@@ -33,7 +34,7 @@ const Home = () => {
       <div className="py-8 flex flex-wrap justify-center gap-5">
         {loading ? (
           Array.from({ length: 10 }).map((_, index) => (
-            <Card key={index} style={{ width: 250 }} loading={true}>
+            <Card key={index} style={{ width: 250, marginTop: 300 }} loading={true}>
               <Skeleton avatar active />
             </Card>
           ))
@@ -49,4 +50,4 @@ const Home = () => {
   );
 };
 
-export default Home
+export default Favourites

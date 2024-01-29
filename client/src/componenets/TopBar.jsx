@@ -16,19 +16,11 @@ const TopBar = () => {
     },
     {
       label: (
-        <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-          All Blogs
-        </a>
+        <Link to="/blogs/favourites">
+          My Favourites
+        </Link>
       ),
       key: '1',
-    },
-    {
-      type: 'divider',
-    },
-    {
-      label: '3rd menu item（disabled）',
-      key: '3',
-      disabled: true,
     },
   ];
 

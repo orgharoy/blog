@@ -1,4 +1,5 @@
 import Blog from "../models/blogs.js";
+import Favorite from '../models/favourite.js';
 
 export const createBlog = async (req, res) => {
   try {
@@ -19,7 +20,11 @@ export const createBlog = async (req, res) => {
 
 export const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.findAll();
+    const blogs = await Blog.findAll({
+      order: [['createdAt', 'DESC']]
+    });
+
+
     res.json(blogs);
   } catch (error) {
     console.error('Error fetching blogs:', error);
@@ -30,14 +35,45 @@ export const getBlogs = async (req, res) => {
 export const getBlogsById = async (req, res) => {
   try {
     const blogId = req.params.id;
+    const userId = req.query.userId;
+
     const blog = await Blog.findByPk(blogId);
 
     if (!blog) {
       return res.status(404).json({ error: 'Blog not found' });
     }
-    res.json(blog);
+
+    if (userId) {
+      const isFavorite = await Favorite.findOne({
+        where: { userId, blogId },
+      });
+
+      res.json({ ...blog.toJSON(), isFavorite: !!isFavorite });
+    } else {
+      res.json(blog);
+    }
   } catch (error) {
     console.error('Error fetching blog by ID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+export const getFavoriteBlogsByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const favoriteBlogs = await Favorite.findAll({
+      where: { userId },
+      attributes: [],
+      include: [{
+        model: Blog,
+      }],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.json(favoriteBlogs.map((favBlog) => favBlog.Blog)); // Extract the Blog model from the result
+  } catch (error) {
+    console.error('Error fetching favorite blogs by userId:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
